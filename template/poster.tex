@@ -1,0 +1,196 @@
+% =====================================================================
+%  A1 RESEARCH-PLAN POSTER  —  Novia UAS / Åbo Akademi University
+%
+%  Compile with XeLaTeX (needs system fonts: Montserrat + Open Sans):
+%      latexmk poster.tex            (uses .latexmkrc → xelatex)
+%      xelatex poster.tex            (one-shot)
+%
+%  Edit the CONTENT section below. Layout/styling sits in PREAMBLE.
+% =====================================================================
+
+\documentclass{article}
+
+% ---------------------------------------------------------------------
+% PREAMBLE — layout, fonts, colours
+% ---------------------------------------------------------------------
+
+% A1 portrait, full bleed (no margins; everything is positioned by hand).
+\usepackage[paperwidth=594mm, paperheight=841mm,
+            margin=0pt, noheadfoot]{geometry}
+
+\usepackage{fontspec}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{multicol}
+\usepackage[absolute, overlay]{textpos}
+\usepackage{ragged2e}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+
+% Fonts: Open Sans for body text, Montserrat for headings/title.
+% Both are variable fonts — fontspec resolves bold/italic via styles.
+\setmainfont{Open Sans}
+\newfontfamily\headingfont{Montserrat}
+% Heavy face for the very large title. We use a dedicated static TTF
+% (ExtraBold or Black) — the variable font's wght axis is fiddlier to
+% drive from XeLaTeX/fontspec. Switch to Montserrat Black for more punch.
+\newfontfamily\titlefont{Montserrat ExtraBold}
+
+% Colours. Whole poster sits on a dark canvas, text is white throughout.
+\definecolor{poster@bg}{HTML}{000000}
+\definecolor{poster@text}{HTML}{FFFFFF}
+\definecolor{poster@onhero}{HTML}{FFFFFF}
+
+% Where to find images: project-level assets/ from any subfolder.
+\graphicspath{{../assets/}{assets/}{./}}
+
+% TextPos in millimetres, anchored to page top-left.
+\setlength{\TPHorizModule}{1mm}
+\setlength{\TPVertModule}{1mm}
+\textblockorigin{0mm}{0mm}
+
+% Layout constants (mm).
+\newcommand{\heroHeight}{525}      % hero image height
+\newcommand{\bodyTop}{555}         % y-coord where the two-column body starts
+\newcommand{\bodyLeft}{38}         % left margin of the body
+\newcommand{\bodyWidth}{518}       % width of the body block (= 594 - 2*38)
+
+% Page setup.
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.7\baselineskip}
+\linespread{1.18}
+
+% Section heading inside the body.
+\renewcommand{\section}[1]{%
+  \par\addvspace{1.2em}%
+  {\headingfont\bfseries\fontsize{34pt}{40pt}\selectfont
+   \color{poster@text}#1\par}%
+  \nopagebreak\addvspace{0.15em}%
+}
+
+% Convenience for inline emphasis used in the body (problem labels, paper IDs).
+\newcommand{\poslabel}[1]{\textbf{#1}}
+
+% =====================================================================
+%  CONTENT
+% =====================================================================
+
+\begin{document}
+
+% --- BACKGROUND IMAGE (full bleed, top to bottom) --------------------
+% The asset already has a built-in gradient that fades to dark at the
+% bottom. We crop a window with the page's aspect ratio (594:841) so
+% nothing is distorted, and we push the crop *tight* against the
+% bottom of the image so the dark gradient occupies the lower half of
+% the poster (where the body text and footer sit).
+%
+% Image is 2250×4000 px (sea_grad.png). We center-crop horizontally and
+% keep the bottom-most strip vertically. Window: 1700×2407 px (aspect
+% 0.706 ≈ page's 0.706). Anchored to the bottom of the image so the
+% darkest part of the gradient lands at the bottom of the poster.
+% In PDF/viewport coords (bottom-left origin):
+%     llx = (2250 − 1700)/2 = 275
+%     lly = 0                            (bottom of image)
+%     urx = 275 + 1700       = 1975
+%     ury = 2407                         (= 4000 − 1593 from top)
+\begin{tikzpicture}[remember picture, overlay]
+  \node[anchor=north west, inner sep=0pt]
+     at (current page.north west)
+     {\includegraphics[width=\paperwidth,
+                       viewport=275 0 1975 2407, clip]{sea_grad.png}};
+\end{tikzpicture}
+
+% --- LOGOS (white-on-dark, so they only work over the hero image) ----
+\begin{textblock}{200}(34,32)               % top-left: Åbo Akademi
+  \includegraphics[height=58mm]{abo_akademi_university-logo_white.png}
+\end{textblock}
+\begin{textblock}{200}(370,38)              % top-right: Novia
+  \hfill\includegraphics[width=180mm]{logoinvinternwhite.pdf}
+\end{textblock}
+
+% --- TITLE / AUTHORS / ABSTRACT (white text, on hero) ----------------
+\begin{textblock}{520}(38,270)
+  \color{poster@onhero}\RaggedRight
+  {\titlefont\fontsize{92pt}{102pt}\selectfont
+   Untapping The Hidden\\Potential of Non-Textual\\Maritime Data Using AI\par}
+  \vspace{14mm}
+  {\fontsize{17pt}{24pt}\selectfont
+   \textbf{Lamin Jatta}, Maritime Technology, Novia University of Applied Sciences,
+   \href{mailto:first.last@novia.fi}{\color{poster@onhero}\underline{first.last@novia.fi}}.\\[2pt]
+   \textbf{Supervisors:} Andreas Lundell (ÅAU), Johan Westö (Novia UAS), and Mikael Manngård (Novia UAS).\par}
+  \vspace{8mm}
+  {\fontsize{20pt}{28pt}\selectfont
+   This thesis addresses the challenge of organizing, filtering, searching,
+   and retrieving information from unstructured, non-textual data, including
+   audio, video, images, and 3D models. The research is applied in maritime
+   simulation and virtual commissioning to extract and organize data used
+   for automated testing.\par}
+\end{textblock}
+
+% --- BODY (two-column, on white) -------------------------------------
+\begin{textblock}{\bodyWidth}(\bodyLeft,\bodyTop)
+  \color{poster@text}\fontsize{17pt}{24pt}\selectfont\RaggedRight
+  \setlength{\columnsep}{18mm}
+  \begin{multicols}{2}
+
+    \section{Research Problem and Goals}
+    This research addresses the following research problems:
+
+    \poslabel{Problem 1:} As industries like maritime and automotive generate
+    massive amounts of audio and video data, only a small fraction of this
+    data proves relevant for training artificial intelligence (AI) models.
+    Current methods for storing and querying unstructured data, such as
+    traditional databases, struggle to efficiently manage the volume of
+    video data produced.
+
+    \poslabel{Problem 2:} Engineering data is rarely available in a
+    machine-readable structured form. It is often represented in formats
+    like figures, drawings, or diagrams, making data extraction and
+    integration challenging. Thus, automatic extraction of information and
+    AI integration in engineering tools is challenging.
+
+    This thesis aims to apply AI-driven techniques to organize, filter, and
+    retrieve relevant information from non-textual data and represent it in
+    a machine-readable format.
+
+    \section{Methods}
+    AI methods, including \textbf{natural language processing},
+    \textbf{multimodal embeddings}, and \textbf{semantic search} methods are
+    applied to address the research problems.
+
+    \section{Implementation}
+    The research will be conducted in the Virtual Sea Trial project for the
+    period 1.1.2024--31.12.2026. The planned publications are presented in
+    chronological order.
+
+    \poslabel{Paper I:} Maritime Automatic Speech Recognition and Key-Phrase
+    Extraction.
+
+    \poslabel{Paper II:} Semantic Search for Maritime Unstructured Data.
+
+    \poslabel{Paper III:} Graph Representations of Maritime Systems.
+
+    \poslabel{Paper IV:} Extracting Information from Engineering Graphs and
+    Diagrams.
+
+    \section{Discussion}
+    The maritime industry and technology providers are expected to benefit
+    from the results through increased operational efficiency and
+    cost-effectiveness. Results happen through publication in (preferably)
+    open-access journals and conference series. Dissemination of results
+    happens through the Virtual Sea Trial project.
+
+  \end{multicols}
+\end{textblock}
+
+% --- FOOTER ----------------------------------------------------------
+\begin{textblock}{594}(0,808)
+  \color{poster@text}\fontsize{14pt}{18pt}\selectfont\centering
+  The Research is Funded by Business Finland \quad$|$\quad
+  Co-Innovation Project Virtual Sea Trial \quad$|$\quad
+  virtualseatrial.fi
+\end{textblock}
+
+\end{document}
