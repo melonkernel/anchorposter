@@ -1,0 +1,11 @@
+Black-and-white minimalist line drawing illustration of a document ingestion pipeline shown as three stages arranged horizontally with thin arrows between them.
+
+Stage 1 (left): a stylised PDF page drawn as a simple rounded-corner rectangle with horizontal lines representing text and a small grid representing a table. A small page-fold corner.
+
+Stage 2 (middle): the same page outline, but now thin bounding boxes are drawn around each individual line of text and each cell of the table — fine-grained layout extraction.
+
+Stage 3 (right): the same page outline, but now the bounding boxes are LARGER and GROUP what belongs semantically together: the table cells and the table header are inside ONE box; a paragraph of text lines is inside ONE box; a small figure with its caption are inside ONE box.
+
+Style: thin black ink strokes only, no shading, no fills, no gradients, no colour. Pure white background. Engineering / blueprint feel. Centred composition with generous white margin around the three stages. 16:9 landscape aspect ratio.
+
+CRITICAL: no text labels, no captions, no words anywhere in the image.

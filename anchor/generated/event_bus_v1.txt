@@ -1,0 +1,15 @@
+Black-and-white minimalist line drawing illustration of an event bus with multiple consumer interfaces subscribing to it.
+
+Centre: a long horizontal cylinder shape (a pipe / data bus), drawn in thin line-art with small dots along its length representing individual events flowing.
+
+Connected to the cylinder by thin straight arrows (showing two-way communication, publish AND subscribe in both directions):
+- Above the bus on the left: a browser window icon (rectangle with three small dots at top representing browser controls).
+- Above the bus on the right: a chat speech-bubble icon representing an AI agent.
+- Below the bus on the left: a microphone icon (cylinder body with small grid lines).
+- Below the bus on the right: a terminal / command-line window (rectangle with a small prompt symbol).
+
+The arrows clearly cross the bus boundary, showing each consumer both publishes events and subscribes to events.
+
+Style: thin black ink strokes only, no shading, no fills, no gradients, no colour. Pure white background. Engineering / blueprint feel. Centred composition with generous white margin. 16:9 landscape aspect ratio.
+
+CRITICAL: no text labels, no captions, no words anywhere in the image.

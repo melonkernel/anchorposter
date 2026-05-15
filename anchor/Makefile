@@ -1,4 +1,4 @@
-SOURCES = better-poster
+SOURCES = better-poster anchor-v2-poster
 PDFS = $(addsuffix .pdf,$(SOURCES))
 ASSETS = $(wildcard ../assets/*.png ../assets/*.pdf)
 

@@ -150,84 +150,45 @@
 \begin{textblock}{157}(14,\contentTop)          % 185 - 2*14 = 157 mm wide
   \color{paneltext}\fontsize{11pt}{15pt}\selectfont\RaggedRight
 
-  {\fontsize{9.5pt}{13pt}\selectfont
+  {\linespread{1}\fontsize{9.5pt}{11.5pt}\selectfont
    \textbf{Christoffer Björkskog} · christoffer.bjorkskog@novia.fi\par
-   \vspace{1mm}
    \textbf{Lamin Jatta} · lamin.jatta@novia.fi\par
    Maritime Technology, Novia University of Applied Sciences\par
-   \vspace{1mm}
+   \vspace{0.8mm}
    \textbf{Supervisors:} Andreas Lundell (ÅAU),
    Johan Westö (Novia UAS), Mikael Manngård (Novia UAS).\par}
 
   \panelhead{Problem}
   AI is already part of engineering work and won't go away. But facts without a clear
-  source can't be trusted --- and shouldn't be. Verifying each claim by opening PDFs
+  source can't be trusted, and shouldn't be. Verifying each claim by opening PDFs
   and scrolling defeats the speed AI was supposed to give.
 
-  % \panelhead{Architecture}
-  % Two MCP services over three folders on disk:
-  % \begin{itemize}\setlength{\itemsep}{1.5pt}\setlength{\parsep}{1pt}\setlength{\leftmargin}{4mm}
-  %   \item \textbf{DOCS} — bronze (raw PDFs) \arr{} silver (page
-  %     layout + text) \arr{} gold (regions with page + bbox).
-  %   \item \textbf{CANVASES} — one folder per canvas. Share like a file.
-  %   \item \textbf{SESSION} — live state in memory; the same JSON
-  %     drives every UI.
-  % \end{itemize}
-  % \texttt{IngestService} turns PDFs into the gold layer.
-  % \texttt{WorkspaceService} records every canvas action as a versioned
-  % event. Both speak MCP, HTTP, and SSE.
-  \panelhead{What Anchor Does}
-  Anchor makes document evidence visible and reusable:
+  \panelhead{What is Anchor}
+  Anchor is a tool for working with engineering documents. From a PDF datasheet, an FMU, a CAD file, or anything else exposed through the Open Ingestion Protocol (OIP), Anchor ingests it and
+  extracts the parts (spec rows, charts, ports, parameters) and makes each one independently addressable by humans and AI agents. Every value keeps a reference back to where it came
+  from in the source. Anchor ships wtih support for PDF, and FMU ingestion, whereas CAD and SysML extensions are under development.
+
+  \panelhead{Ingestion}
+  \includegraphics[width=\linewidth]{ingestion-vector.png}
+  \vspace{1mm}
+  {\fontsize{8.5pt}{11pt}\selectfont\color{panelmuted}
+  A vision-LLM region-extraction step at gold keeps each region semantically
+  coherent: a table header stays with its table, a spec block stays whole.
+  Every value flows forward with its source page and bbox.\par}
+
+  \panelhead{Built}
   \begin{itemize}\setlength{\itemsep}{1.5pt}\setlength{\parsep}{1pt}\setlength{\leftmargin}{4mm}
-    \item Drop technical PDFs into a shared engineering workspace.
-    \item Convert pages into text, images, tables, figures, and semantic regions.
-    \item Ask an agent for specs, operating limits, tables, or facts.
-    \item Place grounded cards on the canvas with source links.
-    \item Jump from a canvas answer back to the exact PDF page and region.
-    \item Keep document evidence separate from FMU wiring so engineers stay in control.
+    \item Engineering PDFs go through bronze \arr{} silver \arr{} gold with a vision-LLM region polish; an FMU extension ships alongside as an example for other source kinds.
+    \item MCP tools cover canvas commands and each producer's actions, namespaced (\texttt{pdf.*}, \texttt{fmu.*}, \dots) so producers coexist.
+    \item Generic node types (concept, entity, fact, document, spec, area, note) ship built-in; extensions register their own renderers at runtime.
+    \item Pure domain core with HTTP, MCP, and a CLI as peer adapters; import-linter contracts keep the boundaries clean in CI. Vendor SDKs live only in extension infra; the core never sees them.
+    \item JSONL event log per workspace; plain-file artefacts per document. No database, no queue. Multi-client sync ($\sim$50\,ms) is a side effect of the in-memory bus.
   \end{itemize}
 
-  \panelhead{How It Works}
-  \begin{itemize}\setlength{\itemsep}{1.5pt}\setlength{\parsep}{1pt}\setlength{\leftmargin}{4mm}
-    % Bronze \rarr{} Silver \rarr{} Gold \rarr{} Canvas
-    % \textbf{Bronze} $\rightarrow$ \textbf{Silver} $\rightarrow$ \textbf{Gold} $\rightarrow$ \textbf{Canvas}
-    %Bronze $\rightarrow$ Silver $\rightarrow$ Gold $\rightarrow$ Canvas
-    \item Bronze $\rightarrow$ Silver $\rightarrow$ Gold $\rightarrow$ Canvas
-    \par Bronze:
-    Raw uploaded PDFs.
-    \par Silver:
-    Page markdown, page images, outlines, tables, figures, and document index.
-    \par Gold:
-    Semantic regions such as tables, charts, diagrams, captions, text blocks, and
-    spec blocks. Each region can carry page and bbox provenance.
-    \par Canvas:
-    React Flow workspace with document cards, facts, spec tables, images, FMUs,
-    plots, notes, and visible source/evidence edges.
-  \end{itemize}
-
-
-  \panelhead{Features}
-  \begin{itemize}\setlength{\itemsep}{1.5pt}\setlength{\parsep}{1pt}\setlength{\leftmargin}{4mm}
-    % \item \textbf{17 MCP commands} — 6 ingest, 11 canvas. Claude Code,
-    % Cursor, or your own agent drives the same data.
-    % \item \textbf{Web UI in the same backend.} Drop a PDF; ingest
-    %   progress streams to every browser tab and agent.
-    % \item \textbf{$\sim$100\,ms multi-client sync} between agents
-    %   and browsers.
-    \item Upload PDFs and run the medallion document pipeline.
-    \item Inspect bronze, silver, and gold status in the right rail.
-    \item Ask grounded questions over documents on the canvas.
-    \item Create fact cards, image crops, and spec/table nodes from document evidence.
-    \item Keep source chips on answers and table rows.
-    \item Click sources to reopen the PDF page with highlights.
-    \item Store conversations and canvas evidence for later review.
-  \end{itemize}
-
-  \panelhead{Boundary}
-  % Automatic document-to-FMU wiring is fully end-to-end.
-  FMU upload, inspect, and simulation routes exist, and FMU nodes are part
-  of the canvas. Automatic document-to-FMU wiring is still manual and
-  experimental; engineers review values before wiring them into simulations.
+  \panelhead{Portable}
+  A canvas is a folder: events.jsonl plus a derived snapshot. Tar it, copy it to
+  another machine, replay; same state, same provenance. Audit, time-travel, and
+  migration are mechanical, not features that have to be added.
 
   \vfill
   {\color{panelmuted}\fontsize{8.5pt}{11pt}\selectfont
@@ -249,7 +210,7 @@
   \vspace{10mm}
   {\headingfont\fontsize{22pt}{28pt}\selectfont
    Datasheet \arr{} canvas \arr{} simulation.\\
-   \emph{Provenance built in.}\par}
+   Each step keeps the source.\par}
 \end{textblock}
 
 % --- ARCHITECTURE DIAGRAM on the dark sea, below the takeaway --------
@@ -258,13 +219,19 @@
 % horizontally in the centre column.
 \begin{textblock}{443}(199,355)
   \centering
-  % \includegraphics[width=420mm]{architecture-v2-inverted.png}
-  \includegraphics[width=340mm]{architecture-v2-inverted.png}
+  \includegraphics[width=380mm]{architecture-diagram-v16-inverted.png}
+\end{textblock}
+
+% Diagram caption (sits just above the funding line)
+\begin{textblock}{443}(199,560)
+  \color{centermuted}\centering
+  \fontsize{10.5pt}{13pt}\selectfont
+  Sources \arr{} producers \arr{} durable artefacts \arr{} core \arr{} consumers.
+  Producers and consumers are pluggable; the core stays small.
 \end{textblock}
 
 % Funding line at bottom of centre column
-% \begin{textblock}{443}(199,556)
-\begin{textblock}{443}(199,574)
+\begin{textblock}{443}(199,580)
   \color{centermuted}\centering
   \fontsize{11pt}{14pt}\selectfont
   Funded by Business Finland · Co-Innovation Project Virtual Sea Trial · virtualseatrial.fi\\
@@ -278,54 +245,33 @@
   \color{paneltext}\fontsize{11pt}{15pt}\selectfont\RaggedRight
 
   \panelhead{The canvas}
-  % \includegraphics[width=\linewidth]{ui_overview.png}
   \includegraphics[width=\linewidth]{grounded_canvas.png}
   \vspace{1mm}
   {\fontsize{8.5pt}{11pt}\selectfont\color{panelmuted}
-   % Question top. Cards carry source crops with one-click jump to the
-   % PDF region. Right rail: bronze\,\arr\,silver\,\arr\,gold ingestion
-   % of the active datasheet.
-   The canvas shows the proof loop: a grounded answer, its document source,
-   PDF-derived visual regions, and the medallion status of the active datasheet.\par}
+   Cards carry source crops with a one-click jump back to the PDF page. Drop a file
+   onto the canvas and the producer that claims its kind ingests it in place.\par}
 
-  \panelhead{Evidence Loop}
-  \begin{itemize}\setlength{\itemsep}{1.5pt}\setlength{\parsep}{1pt}\setlength{\leftmargin}{4mm}
-    \item Ask a question about a product datasheet.
-    \item The agent reads canvas context and document indexes.
-    \item The answer becomes a canvas card or table.
-    \item The source chip opens the PDF page and bbox behind the claim.
-    % \item Repeat.
-  \end{itemize}
+  \panelhead{Extensions}
+  \includegraphics[width=\linewidth]{oip-arch.png}
+  \vspace{1mm}
+  {\fontsize{8.5pt}{11pt}\selectfont\color{panelmuted}
+   An OIP extension is three things: a manifest, on-disk artefacts, and MCP tools.
+   The shipped PDF producer is the working example; anything that satisfies the
+   contract plugs in the same way.\par}
 
-  \panelhead{Why Industry Should Care}
-  \begin{itemize}\setlength{\itemsep}{1.5pt}\setlength{\parsep}{1pt}\setlength{\leftmargin}{4mm}
-    \item Fewer copy-paste errors from datasheets into engineering work.
-    \item Faster review because source pages are one click away.
-    \item Better handoff between engineers, agents, and simulation workflows.
-    \item Local-first project data that can be inspected, copied, and versioned.
-    \item Works with practical product leaflets, not only clean academic PDFs.
-  \end{itemize}
-
-  % \panelhead{Self-hosted}
-  \panelhead{Local Demo}
-  \begin{itemize}\setlength{\itemsep}{1.5pt}\setlength{\parsep}{1pt}\setlength{\leftmargin}{4mm}
-    % \item Runs on a laptop, server, or air-gapped PC. No cloud
-    %   account, no telemetry.
-    % \item Each canvas is a folder. Copy, share, version-control.
-    % \item Open source.
-    \item Runs locally with Node.js, Python 3.12, uv, and model credentials.
-    \item Current demo uses file-backed documents and conversations; PostgreSQL is not required.
-    \item \texttt{git clone} \arr{} \texttt{npm install} \arr{} \texttt{uv sync} \arr{} \texttt{npm run dev}.
-  \end{itemize}
+  \panelhead{Bring your own harness}
+  The UI, MCP agents, and a CLI share one WorkspaceService and one event bus; humans
+  and agent harnesses drive the canvas through identical paths. New interfaces
+  (voice, XR, a chat monitor) plug in the same way.
 
   \panelhead{Read more}
   \vspace{1mm}
   \begin{center}
-    \qrcode[height=38mm]{https://github.com/Novia-RDI-Seafaring/anchor-kb-ui-RAG}
+    \qrcode[height=38mm]{https://github.com/Novia-RDI-Seafaring/anchor}
   \end{center}
   \vspace{1mm}
   {\centering\fontsize{9.5pt}{12pt}\selectfont
-   github.com/Novia-RDI-Seafaring/\\anchor-kb-ui-RAG\par}
+   github.com/Novia-RDI-Seafaring/anchor\par}
   \vspace{1mm}
   {\centering\fontsize{8.5pt}{11pt}\selectfont\color{panelmuted}
    Source code and local setup instructions.\par}
